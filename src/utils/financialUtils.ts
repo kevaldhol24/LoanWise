@@ -48,7 +48,7 @@ export function calculateTenure(principal: number, ratePerAnnum: number, emi: nu
   const numerator = Math.log(emi / (emi - principal * monthlyRate));
   const denominator = Math.log(1 + monthlyRate);
   
-  return Math.ceil(numerator / denominator);
+  return Math.round(numerator / denominator);
 }
 
 /**

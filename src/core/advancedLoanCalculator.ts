@@ -182,10 +182,15 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
       // 3. Prepayments
       
       // Check if there's an EMI change for the current month
-      this.applyEMIChange(currentDate, currentEMI, remainingBalance, currentInterestRate);
-      
+      currentEMI = this.applyEMIChange(currentDate, currentEMI, remainingBalance, currentInterestRate);
+
       // Check if there's an interest rate change for the current month
-      this.applyInterestRateChange(currentDate, currentEMI, remainingBalance, currentInterestRate);
+      const {
+        currentEMI: updatedEMI,
+        currentInterestRate: updatedInterestRate
+      } = this.applyInterestRateChange(currentDate, currentEMI, remainingBalance, currentInterestRate);
+      currentEMI = updatedEMI;
+      currentInterestRate = updatedInterestRate;
       
       // Calculate interest for the current month based on current interest rate
       const interestForMonth = calculateMonthlyInterest(remainingBalance, currentInterestRate);
@@ -204,7 +209,7 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
       remainingBalance = roundToDecimal(remainingBalance - principalForMonth, 2);
       
       // Calculate prepayment for the current month
-      const prepaymentAmount = this.calculatePrepaymentForMonth(currentDate, remainingBalance);
+      const prepaymentAmount = this.calculatePrepaymentForMonth(currentDate, remainingBalance, currentInterestRate, emiAmount);
       
       // Apply prepayment if any
       if (prepaymentAmount > 0) {
@@ -256,10 +261,12 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
    * @param remainingBalance Current remaining balance
    * @param currentInterestRate Current interest rate
    */
-  private applyEMIChange(currentDate: string, currentEMI: number, remainingBalance: number, currentInterestRate: number): void {
+  private applyEMIChange(currentDate: string, currentEMIAmount: number, remainingBalance: number, currentInterestRate: number): number {
     const applicableEMIChanges = this.emiChanges.filter(
       change => currentDate === change.startDate
     );
+
+    let currentEMI = currentEMIAmount;
     
     if (applicableEMIChanges.length > 0) {
       // Sort by date to get the latest change
@@ -283,9 +290,9 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
       const newTenure = calculateTenure(remainingBalance, currentInterestRate, emiChange.emi);
       const tenureChange = newTenure - oldTenure;
       
-      // Calculate interest difference
-      const oldTotalInterest = oldEMI * oldTenure - remainingBalance;
-      const newTotalInterest = emiChange.emi * newTenure - remainingBalance;
+      // Calculate interest difference using accurate method
+      const oldTotalInterest = this.calculateAccurateInterest(remainingBalance, currentInterestRate, oldEMI);
+      const newTotalInterest = this.calculateAccurateInterest(remainingBalance, currentInterestRate, emiChange.emi);
       const interestDifference = newTotalInterest - oldTotalInterest;
       
       // Store the impact
@@ -297,6 +304,7 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
         interestDifference: roundToDecimal(interestDifference, 2)
       });
     }
+    return currentEMI;
   }
   
   /**
@@ -306,10 +314,16 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
    * @param remainingBalance Current remaining balance
    * @param currentInterestRate Reference to the current interest rate
    */
-  private applyInterestRateChange(currentDate: string, currentEMI: number, remainingBalance: number, currentInterestRate: number): void {
+  private applyInterestRateChange(currentDate: string, currentEMIAmount: number, remainingBalance: number, currentLoanInterestRate: number): {
+    currentEMI: number;
+    currentInterestRate: number;
+  } {
     const applicableRateChanges = this.interestRateChanges.filter(
       change => currentDate === change.effectiveDate
     );
+
+    let currentInterestRate = currentLoanInterestRate;
+    let currentEMI = currentEMIAmount;
     
     if (applicableRateChanges.length > 0) {
       // Sort by date to get the latest change
@@ -330,9 +344,9 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
         const newEMI = calculateEMI(remainingBalance, rateChange.rate, oldTenure);
         currentEMI = newEMI;
         
-        // Calculate interest difference
-        const oldTotalInterest = oldEMI * oldTenure - remainingBalance;
-        const newTotalInterest = newEMI * oldTenure - remainingBalance;
+        // Calculate interest difference using accurate method
+        const oldTotalInterest = this.calculateAccurateInterest(remainingBalance, oldRate, oldEMI);
+        const newTotalInterest = this.calculateAccurateInterest(remainingBalance, rateChange.rate, newEMI);
         const interestDifference = newTotalInterest - oldTotalInterest;
         
         // Store the impact
@@ -345,16 +359,15 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
           tenureChange: 0, // No change in tenure
           interestDifference: roundToDecimal(interestDifference, 2)
         });
-      } 
-      // If the impact is on tenure, keep the EMI the same
-      else {
+      } else {
+        // If the impact is on tenure, keep the EMI the same
         const oldTenure = calculateTenure(remainingBalance, oldRate, oldEMI);
         const newTenure = calculateTenure(remainingBalance, rateChange.rate, oldEMI);
         const tenureChange = newTenure - oldTenure;
         
-        // Calculate interest difference
-        const oldTotalInterest = oldEMI * oldTenure - remainingBalance;
-        const newTotalInterest = oldEMI * newTenure - remainingBalance;
+        // Calculate interest difference using accurate method
+        const oldTotalInterest = this.calculateAccurateInterest(remainingBalance, oldRate, oldEMI);
+        const newTotalInterest = this.calculateAccurateInterest(remainingBalance, rateChange.rate, oldEMI);
         const interestDifference = newTotalInterest - oldTotalInterest;
         
         // Store the impact
@@ -369,15 +382,22 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
         });
       }
     }
+
+    return {
+      currentEMI,
+      currentInterestRate
+    };
   }
   
   /**
    * Calculates prepayment amount for the current month
    * @param currentDate Current date
    * @param remainingBalance Current remaining balance
+   * @param loanInterestRate Current loan interest rate
+   * @param emiAmount Current EMI amount
    * @returns Prepayment amount for the month
    */
-  private calculatePrepaymentForMonth(currentDate: string, remainingBalance: number): number {
+  private calculatePrepaymentForMonth(currentDate: string, remainingBalance: number, loanInterestRate: number, emiAmount: number): number {
     let totalPrepayment = 0;
     
     // Process all applicable prepayments for the current month
@@ -400,7 +420,7 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
       totalPrepayment += prepaymentAmount;
       
       // Calculate the impact of this prepayment
-      this.calculatePrepaymentImpact(prepayment, remainingBalance, prepaymentAmount);
+      this.calculatePrepaymentImpact(prepayment, remainingBalance, prepaymentAmount, loanInterestRate, emiAmount);
     }
     
     return totalPrepayment;
@@ -411,11 +431,15 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
    * @param prepayment Prepayment definition
    * @param remainingBalance Current remaining balance
    * @param prepaymentAmount Actual prepayment amount
+   * @param loanInterestRate Current loan interest rate
+   * @param emiAmount Current EMI amount
    */
   private calculatePrepaymentImpact(
     prepayment: Prepayment,
     remainingBalance: number,
-    prepaymentAmount: number
+    prepaymentAmount: number,
+    loanInterestRate: number,
+    emiAmount: number,
   ): void {
     // Find existing impact for this prepayment ID
     const existingImpact = this.prepaymentImpacts.find(
@@ -423,8 +447,8 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
     );
     
     // Calculate the interest saved and other impacts
-    const currentInterestRate = this.interestRate;
-    const currentEMI = this.calculatedEMI;
+    const currentInterestRate = loanInterestRate;
+    const currentEMI = emiAmount;
     
     if (prepayment.impact === 'tenure') {
       // Calculate old tenure and new tenure
@@ -436,9 +460,13 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
       );
       const monthsReduced = oldTenure - newTenure;
       
-      // Calculate interest saved
-      const oldTotalInterest = currentEMI * oldTenure - remainingBalance;
-      const newTotalInterest = currentEMI * newTenure - (remainingBalance - prepaymentAmount);
+      // Calculate interest saved using accurate method
+      const oldTotalInterest = this.calculateAccurateInterest(remainingBalance, currentInterestRate, currentEMI);
+      const newTotalInterest = this.calculateAccurateInterest(
+        remainingBalance - prepaymentAmount, 
+        currentInterestRate, 
+        currentEMI
+      );
       const interestSaved = oldTotalInterest - newTotalInterest;
       
       if (existingImpact) {
@@ -473,9 +501,13 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
       );
       const emiReduced = oldEMI - newEMI;
       
-      // Calculate interest saved
-      const oldTotalInterest = oldEMI * remainingTenureMonths - remainingBalance;
-      const newTotalInterest = newEMI * remainingTenureMonths - (remainingBalance - prepaymentAmount);
+      // Calculate interest saved using accurate method
+      const oldTotalInterest = this.calculateAccurateInterest(remainingBalance, currentInterestRate, oldEMI);
+      const newTotalInterest = this.calculateAccurateInterest(
+        remainingBalance - prepaymentAmount, 
+        currentInterestRate, 
+        newEMI
+      );
       const interestSaved = oldTotalInterest - newTotalInterest;
       
       if (existingImpact) {
@@ -529,5 +561,41 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
     };
     
     return summary;
+  }
+
+  /**
+   * Calculates the accurate total interest by simulating the actual amortization schedule
+   * @param principal Initial loan amount or remaining balance
+   * @param interestRate Annual interest rate
+   * @param emiAmount Monthly EMI amount
+   * @returns The total interest paid over the loan
+   */
+  private calculateAccurateInterest(principal: number, interestRate: number, emiAmount: number): number {
+    let remainingBalance = principal;
+    let totalInterest = 0;
+    
+    // Iterate until loan is fully paid or for a maximum number of iterations
+    const maxIterations = 1000; // Safety limit
+    
+    for (let i = 0; i < maxIterations && remainingBalance > 0; i++) {
+      // Calculate interest for the current month
+      const interestForMonth = calculateMonthlyInterest(remainingBalance, interestRate);
+      
+      // Principal component of EMI
+      let principalForMonth = emiAmount - interestForMonth;
+      
+      // Adjust for the last payment if needed
+      if (remainingBalance < principalForMonth) {
+        principalForMonth = remainingBalance;
+      }
+      
+      // Add interest to the total
+      totalInterest += interestForMonth;
+      
+      // Reduce the remaining balance
+      remainingBalance = roundToDecimal(remainingBalance - principalForMonth, 2);
+    }
+    
+    return roundToDecimal(totalInterest, 2);
   }
 }
