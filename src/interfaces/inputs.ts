@@ -18,8 +18,15 @@ export interface BasicLoanInputs {
 /**
  * Defines the impact type of a change (prepayment, interest rate change, etc.)
  */
-export type ImpactType = 'EMI' | 'tenure';
+export enum ImpactType {
+  EMI = 'EMI',
+  Tenure = 'tenure',
+}
 
+export enum PrepaymentFrequency {
+  Monthly = 'monthly',
+  Onetime = 'onetime',
+}
 /**
  * Base change interface with common properties
  */
@@ -36,7 +43,7 @@ export interface Prepayment extends BaseChange {
   amount: number;
   
   /** Type of prepayment */
-  type: 'monthly' | 'onetime';
+  type: PrepaymentFrequency;
   
   /** Date of first/only prepayment in ISO format */
   startDate: string;

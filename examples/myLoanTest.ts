@@ -1,4 +1,4 @@
-import { AdvancedLoanCalculator, LoanCalculationInputs, Prepayment, InterestRateChange, EMIChange, EMIScheduleItem } from '../src';
+import { AdvancedLoanCalculator, LoanCalculationInputs, Prepayment, InterestRateChange, EMIChange, EMIScheduleItem, PrepaymentFrequency, ImpactType } from '../src';
 
 
 // Color codes for terminal output
@@ -119,10 +119,10 @@ const loanConfig2: LoanCalculationInputs = {
     {
       id: 'Year-bonus',
       amount: 100000,               // Amount to prepay
-      type: 'onetime',             // 'onetime' or 'monthly'
+      type: PrepaymentFrequency.Onetime,             // 'onetime' or 'monthly'
       startDate: '2025-05-01',     // When the prepayment happens
       // startDate: '2025-06-01',     // When the prepayment happens
-      impact: 'EMI'             // 'tenure' (reduce loan period) or 'emi' (reduce monthly payment)
+      impact: ImpactType.EMI             // 'tenure' (reduce loan period) or 'emi' (reduce monthly payment)
     },
     // {
     //   id: 'YearLy-bonus',
