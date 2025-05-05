@@ -209,8 +209,8 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
       remainingBalance = roundToDecimal(remainingBalance - principalForMonth, 2);
       
       // Calculate prepayment for the current month
-      const prepaymentAmount = this.calculatePrepaymentForMonth(currentDate, remainingBalance, currentInterestRate, emiAmount);
-      
+      const { totalPrepayment: prepaymentAmount, newEMI } = this.calculatePrepaymentForMonth(currentDate, remainingBalance, currentInterestRate, emiAmount);
+      currentEMI = newEMI;
       // Apply prepayment if any
       if (prepaymentAmount > 0) {
         // If prepayment is greater than remaining balance, adjust it
@@ -397,9 +397,9 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
    * @param emiAmount Current EMI amount
    * @returns Prepayment amount for the month
    */
-  private calculatePrepaymentForMonth(currentDate: string, remainingBalance: number, loanInterestRate: number, emiAmount: number): number {
+  private calculatePrepaymentForMonth(currentDate: string, remainingBalance: number, loanInterestRate: number, emiAmount: number): { totalPrepayment: number; newEMI: number } {
     let totalPrepayment = 0;
-    
+    let newEMI = emiAmount;
     // Process all applicable prepayments for the current month
     for (const prepayment of this.prepayments) {
       // Skip if the payment is not applicable for this month
@@ -420,10 +420,10 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
       totalPrepayment += prepaymentAmount;
       
       // Calculate the impact of this prepayment
-      this.calculatePrepaymentImpact(prepayment, remainingBalance, prepaymentAmount, loanInterestRate, emiAmount);
+      newEMI = this.calculatePrepaymentImpact(prepayment, remainingBalance, prepaymentAmount, loanInterestRate, emiAmount);
     }
     
-    return totalPrepayment;
+    return {totalPrepayment, newEMI};
   }
   
   /**
@@ -440,7 +440,7 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
     prepaymentAmount: number,
     loanInterestRate: number,
     emiAmount: number,
-  ): void {
+  ): number {
     // Find existing impact for this prepayment ID
     const existingImpact = this.prepaymentImpacts.find(
       impact => impact.prepaymentId === prepayment.id
@@ -448,7 +448,7 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
     
     // Calculate the interest saved and other impacts
     const currentInterestRate = loanInterestRate;
-    const currentEMI = emiAmount;
+    let currentEMI = emiAmount;
     
     if (prepayment.impact === 'tenure') {
       // Calculate old tenure and new tenure
@@ -525,7 +525,9 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
           emiReduced: roundToDecimal(emiReduced, 2)
         });
       }
+      currentEMI = newEMI;
     }
+    return currentEMI
   }
   
   /**

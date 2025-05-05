@@ -120,18 +120,18 @@ const loanConfig2: LoanCalculationInputs = {
       id: 'Year-bonus',
       amount: 100000,               // Amount to prepay
       type: 'onetime',             // 'onetime' or 'monthly'
-      startDate: '2025-10-01',     // When the prepayment happens
+      startDate: '2025-05-01',     // When the prepayment happens
       // startDate: '2025-06-01',     // When the prepayment happens
-      impact: 'tenure'             // 'tenure' (reduce loan period) or 'emi' (reduce monthly payment)
+      impact: 'EMI'             // 'tenure' (reduce loan period) or 'emi' (reduce monthly payment)
     },
-    {
-      id: 'YearLy-bonus',
-      amount: 100000,               // Amount to prepay
-      type: 'onetime',             // 'onetime' or 'monthly'
-      startDate: '2026-02-01',     // When the prepayment happens
-      // startDate: '2025-06-01',     // When the prepayment happens
-      impact: 'tenure'             // 'tenure' (reduce loan period) or 'emi' (reduce monthly payment)
-    },
+    // {
+    //   id: 'YearLy-bonus',
+    //   amount: 100000,               // Amount to prepay
+    //   type: 'onetime',             // 'onetime' or 'monthly'
+    //   startDate: '2026-02-01',     // When the prepayment happens
+    //   // startDate: '2025-06-01',     // When the prepayment happens
+    //   impact: 'tenure'             // 'tenure' (reduce loan period) or 'emi' (reduce monthly payment)
+    // },
     // {
     //   id: 'Savings',
     //   amount: 10000,               // Amount to prepay
