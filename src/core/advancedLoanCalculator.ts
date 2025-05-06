@@ -176,21 +176,22 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
     for (let i = 0; i < maxTenure; i++) {
       const currentDate = addMonths(this.startDate, i);
       
-      // Apply changes for the current month in order of precedence:
-      // 1. EMI changes
-      // 2. Interest rate changes
+      // Apply changes for the current month in REVERSED order of precedence:
+      // 1. Interest rate changes first
+      // 2. Then EMI changes (so they take precedence)
       // 3. Prepayments
       
-      // Check if there's an EMI change for the current month
-      currentEMI = this.applyEMIChange(currentDate, currentEMI, remainingBalance, currentInterestRate);
-
-      // Check if there's an interest rate change for the current month
+      // First check if there's an interest rate change for the current month
       const {
         currentEMI: updatedEMI,
         currentInterestRate: updatedInterestRate
       } = this.applyInterestRateChange(currentDate, currentEMI, remainingBalance, currentInterestRate);
       currentEMI = updatedEMI;
       currentInterestRate = updatedInterestRate;
+
+       // Check if there's an EMI change for the current month
+       currentEMI = this.applyEMIChange(currentDate, currentEMI, remainingBalance, currentInterestRate);
+
       
       // Calculate interest for the current month based on current interest rate
       const interestForMonth = calculateMonthlyInterest(remainingBalance, currentInterestRate);

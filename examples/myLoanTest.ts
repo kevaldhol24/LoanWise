@@ -109,57 +109,101 @@ const loanConfig1: LoanCalculationInputs = {
 
 const loanConfig2: LoanCalculationInputs = {
   // Basic loan parameters
-  loanAmount: 1000000,               // Total loan amount
+  loanAmount: 100000,               // Total loan amount
   initialInterestRate: 10,         // Interest rate in percentage
-  startDate: '2025-04-01',          // Loan start date
+  startDate: '2025-05-01',          // Loan start date
   tenureMonths: 120,                // Loan tenure in months (10 years)
   
   // Optional: Add prepayments (comment out if not needed)
   prepayments: [
     {
       id: 'Year-bonus',
-      amount: 100000,               // Amount to prepay
+      amount: 10000,               // Amount to prepay
       type: PrepaymentFrequency.Onetime,             // 'onetime' or 'monthly'
-      startDate: '2025-05-01',     // When the prepayment happens
+      startDate: '2025-06-01',     // When the prepayment happens
       // startDate: '2025-06-01',     // When the prepayment happens
       impact: ImpactType.EMI             // 'tenure' (reduce loan period) or 'emi' (reduce monthly payment)
     },
-    // {
-    //   id: 'YearLy-bonus',
-    //   amount: 100000,               // Amount to prepay
-    //   type: 'onetime',             // 'onetime' or 'monthly'
-    //   startDate: '2026-02-01',     // When the prepayment happens
-    //   // startDate: '2025-06-01',     // When the prepayment happens
-    //   impact: 'tenure'             // 'tenure' (reduce loan period) or 'emi' (reduce monthly payment)
-    // },
-    // {
-    //   id: 'Savings',
-    //   amount: 10000,               // Amount to prepay
-    //   type: 'onetime',             // 'onetime' or 'monthly'
-    //   startDate: '2025-11-01',     // When the prepayment happens
-    //   impact: 'tenure'             // 'tenure' (reduce loan period) or 'emi' (reduce monthly payment)
-    // }
   ],
   
   // Optional: Add interest rate changes (comment out if not needed)
-  // interestRateChanges: [
-  //   {
-  //     id: 'rate-adjustment',
-  //     rate: 8.0,                   // New interest rate
-  //     effectiveDate: '2026-06-01', // When the rate change takes effect
-  //     impact: 'EMI'                // 'EMI' or 'tenure'
-  //   }
-  // ],
+  interestRateChanges: [
+    {
+      id: 'rate-adjustment',
+      rate: 8.5,                   // New interest rate
+      effectiveDate: '2025-07-01', // When the rate change takes effect
+      impact: ImpactType.EMI                // 'EMI' or 'tenure'
+    }
+  ],
   
   // Optional: Add EMI changes (comment out if not needed)
-  // emiChanges: [
-  //   {
-  //     id: 'payment-increase',
-  //     emi: 10000,                   // New EMI amount
-  //     startDate: '2027-01-01'      // When the EMI change takes effect
-  //   } as EMIChange
-  // ]
+  emiChanges: [
+    {
+      id: 'payment-increase',
+      emi: 1454,                   // New EMI amount
+      startDate: '2025-07-01'      // When the EMI change takes effect
+    }
+  ]
 };
+
+// output of loanConfig2
+
+// LOAN SUMMARY 
+// Loan Amount: $100000.00
+// Interest Rate: 10%
+// Loan Term: 120 months (10.0 years)
+// Start Date: 2025-05-01
+// Monthly EMI: $1321.51
+// Total Interest: $31817.90
+// Total Amount Payable: $131817.90
+// Final Payment Date: 2032-09-01
+// Actual Tenure: 89 months
+
+//  PREPAYMENT IMPACT 
+// Total Prepayment: $10000.00
+
+// Prepayment: Year-bonus
+// Amount: $10000.00
+// Interest Saved: $5747.94
+// Months Reduced: 0
+
+//  INTEREST RATE CHANGE IMPACT 
+
+// Change: rate-adjustment
+// Rate Change: 10% → 8.5%
+// EMI Change: $1454.00 → $1385.75
+// Tenure Change: 0 months
+// Interest Difference: $-5879.64
+
+//  EMI CHANGE IMPACT 
+
+// Change: payment-increase
+// EMI Change: $1188.05 → $1454.00
+// Tenure Change: -32 months
+// Interest Difference: $-15135.08
+
+//  PAYMENT SCHEDULE SAMPLES 
+
+// Initial Payments
+// 1. 2025-05-01 | EMI: $1321.51 | Interest: $833.33 | Principal: $488.18 | Balance: $99511.82
+// 2. 2025-06-01 | EMI: $1321.51 | Interest: $829.27 | Principal: $492.24 | Balance: $89019.58
+// 3. 2025-07-01 | EMI: $1385.75 | Interest: $630.56 | Principal: $755.19 | Balance: $88264.39
+// 4. 2025-08-01 | EMI: $1385.75 | Interest: $625.21 | Principal: $760.54 | Balance: $87503.85
+// 5. 2025-09-01 | EMI: $1385.75 | Interest: $619.82 | Principal: $765.93 | Balance: $86737.92
+
+// Mid-term Payments
+// 43. 2028-11-01 | EMI: $1385.75 | Interest: $384.19 | Principal: $1001.56 | Balance: $53237.59
+// 44. 2028-12-01 | EMI: $1385.75 | Interest: $377.10 | Principal: $1008.65 | Balance: $52228.94
+// 45. 2029-01-01 | EMI: $1385.75 | Interest: $369.95 | Principal: $1015.80 | Balance: $51213.14
+// 46. 2029-02-01 | EMI: $1385.75 | Interest: $362.76 | Principal: $1022.99 | Balance: $50190.15
+// 47. 2029-03-01 | EMI: $1385.75 | Interest: $355.51 | Principal: $1030.24 | Balance: $49159.91
+
+// Final Payments
+// 85. 2032-05-01 | EMI: $1385.75 | Interest: $38.58 | Principal: $1347.17 | Balance: $4099.41
+// 86. 2032-06-01 | EMI: $1385.75 | Interest: $29.04 | Principal: $1356.71 | Balance: $2742.70
+// 87. 2032-07-01 | EMI: $1385.75 | Interest: $19.43 | Principal: $1366.32 | Balance: $1376.38
+// 88. 2032-08-01 | EMI: $1385.75 | Interest: $9.75 | Principal: $1376.00 | Balance: $0.38
+// 89. 2032-09-01 | EMI: $0.38 | Interest: $0.00 | Principal: $0.38 | Balance: $0.00
 
 // ======= LOAN CALCULATION AND RESULTS DISPLAY =======
 const loanConfig = loanConfig2;
