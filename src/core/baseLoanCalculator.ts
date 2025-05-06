@@ -116,7 +116,8 @@ export class BaseLoanCalculator {
         prepayment: 0,
         remainingBalance,
         principalPaidTillDate,
-        totalMonthlyPayment: roundToDecimal(emiAmount, 2) // Same as EMI amount when no prepayment
+        totalMonthlyPayment: roundToDecimal(emiAmount, 2), // Same as EMI amount when no prepayment
+        interestRate: this.interestRate // Add the interest rate for this month
       };
       
       schedule.push(scheduleItem);

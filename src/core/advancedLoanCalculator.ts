@@ -9,7 +9,7 @@ import {
   PrepaymentImpact 
 } from '../interfaces/outputs';
 import { addMonths, getMonth, getYear, isBefore, isBetween } from '../utils/dateUtils';
-import { calculateEMI, calculateMonthlyInterest, calculateTenure, isEMISufficient, roundToDecimal } from '../utils/financialUtils';
+import { calculateEMI, calculateMinimumEMI, calculateMonthlyInterest, calculateTenure, isEMISufficient, roundToDecimal } from '../utils/financialUtils';
 import { BaseLoanCalculator } from './baseLoanCalculator';
 
 /**
@@ -22,6 +22,7 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
   private prepaymentImpacts: PrepaymentImpact[] = [];
   private interestChangeImpacts: InterestRateChangeImpact[] = [];
   private emiChangeImpacts: EMIChangeImpact[] = [];
+  private emiSchedule: EMIScheduleItem[] = [];
   
   /**
    * Constructor for AdvancedLoanCalculator
@@ -155,7 +156,21 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
       impacts
     };
   }
-  
+
+  /**
+   * Gets the minimum EMI for a specific month
+   * @param date Date in ISO format (YYYY-MM-DD)
+   * @returns Minimum EMI for the month
+   */
+  public getMinimumEMIForMonth(date: string): number {
+    const parsedDate = new Date(date);
+    const emi = this.emiSchedule.find(item => item.month === parsedDate.getMonth() && item.year === parsedDate.getFullYear());
+    if (!emi) {
+      return 0;
+    }
+    return calculateMinimumEMI(emi.remainingBalance, emi.interestRate);
+  }
+
   /**
    * Generates the EMI schedule for the loan with all advanced features
    * @returns Array of EMI schedule items
@@ -189,9 +204,8 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
       currentEMI = updatedEMI;
       currentInterestRate = updatedInterestRate;
 
-       // Check if there's an EMI change for the current month
-       currentEMI = this.applyEMIChange(currentDate, currentEMI, remainingBalance, currentInterestRate);
-
+      // Check if there's an EMI change for the current month
+      currentEMI = this.applyEMIChange(currentDate, currentEMI, remainingBalance, currentInterestRate);
       
       // Calculate interest for the current month based on current interest rate
       const interestForMonth = calculateMonthlyInterest(remainingBalance, currentInterestRate);
@@ -235,7 +249,8 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
         prepayment: roundToDecimal(prepaymentAmount || 0, 2),
         remainingBalance,
         principalPaidTillDate,
-        totalMonthlyPayment: roundToDecimal(emiAmount + (prepaymentAmount || 0), 2)
+        totalMonthlyPayment: roundToDecimal(emiAmount + (prepaymentAmount || 0), 2),
+        interestRate: currentInterestRate // Add the interest rate for this month
       };
       
       schedule.push(scheduleItem);
@@ -251,7 +266,7 @@ export class AdvancedLoanCalculator extends BaseLoanCalculator {
         break;
       }
     }
-    
+    this.emiSchedule = schedule;
     return schedule;
   }
   

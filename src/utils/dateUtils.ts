@@ -83,7 +83,7 @@ export function getYear(dateStr: string): number {
  * @returns Month (1-12)
  */
 export function getMonth(dateStr: string): number {
-  return new Date(dateStr).getMonth() + 1; // JavaScript months are 0-11
+  return new Date(dateStr).getMonth(); // JavaScript months are 0-11
 }
 
 /**

@@ -63,6 +63,9 @@ export interface EMIScheduleItem {
   
   /** Total monthly payment (EMI + prepayment) */
   totalMonthlyPayment: number;
+  
+  /** Interest rate applied for this month (annual percentage) */
+  interestRate: number;
 }
 
 /**
