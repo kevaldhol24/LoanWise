@@ -1,4 +1,4 @@
-import { AdvancedLoanCalculator, LoanCalculationInputs } from '../src';
+import { AdvancedLoanCalculator, ImpactType, LoanCalculationInputs, PrepaymentFrequency } from '../src';
 
 /**
  * This example demonstrates how to use the LoanWise library to calculate various loan scenarios
@@ -38,16 +38,16 @@ const loanWithPrepayments = () => {
       {
         id: 'annual-bonus',
         amount: 10000,
-        type: 'onetime',
+        type: PrepaymentFrequency.Onetime,
         startDate: '2023-12-15',
-        impact: 'tenure'
+        impact: ImpactType.Tenure
       },
       {
         id: 'monthly-extra',
         amount: 500,
-        type: 'monthly',
+        type: PrepaymentFrequency.Monthly,
         startDate: '2024-01-01',
-        impact: 'tenure'
+        impact: ImpactType.Tenure
       }
     ]
   };
@@ -86,13 +86,13 @@ const loanWithInterestRateChanges = () => {
         id: 'rate-increase',
         rate: 9.5,
         effectiveDate: '2024-01-01',
-        impact: 'EMI' // Increase EMI, keep tenure same
+        impact: ImpactType.EMI // Increase EMI, keep tenure same
       },
       {
         id: 'rate-decrease',
         rate: 7.5,
         effectiveDate: '2025-01-01',
-        impact: 'tenure' // Keep EMI same, reduce tenure
+        impact: ImpactType.Tenure // Keep EMI same, reduce tenure
       }
     ]
   };
@@ -166,9 +166,9 @@ const combinedExample = () => {
       {
         id: 'annual-bonus',
         amount: 15000,
-        type: 'onetime',
+        type: PrepaymentFrequency.Onetime,
         startDate: '2023-12-15',
-        impact: 'tenure'
+        impact: ImpactType.Tenure
       }
     ],
     interestRateChanges: [
@@ -176,7 +176,7 @@ const combinedExample = () => {
         id: 'market-adjustment',
         rate: 7.75,
         effectiveDate: '2024-06-01',
-        impact: 'EMI'
+        impact: ImpactType.EMI
       }
     ],
     emiChanges: [

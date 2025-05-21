@@ -1,4 +1,4 @@
-import { EMIChange, InterestRateChange, LoanCalculationInputs, Prepayment } from '../interfaces/inputs';
+import { EMIChange, InterestRateChange, LoanCalculationInputs, Prepayment } from '../../interfaces';
 import { 
   EMIChangeImpact, 
   EMIScheduleItem, 
@@ -7,9 +7,9 @@ import {
   LoanCalculationOutput, 
   LoanSummary,
   PrepaymentImpact 
-} from '../interfaces/outputs';
-import { addMonths, getMonth, getYear, isBefore, isBetween } from '../utils/dateUtils';
-import { calculateEMI, calculateMinimumEMI, calculateMonthlyInterest, calculateTenure, isEMISufficient, roundToDecimal } from '../utils/financialUtils';
+} from '../../interfaces';
+import { addMonths, getMonth, getYear, isBefore, isBetween } from '../../utils/dateUtils';
+import { calculateEMI, calculateMinimumEMI, calculateMonthlyInterest, calculateTenure, isEMISufficient, roundToDecimal } from '../../utils/financialUtils';
 import { BaseLoanCalculator } from './baseLoanCalculator';
 
 /**

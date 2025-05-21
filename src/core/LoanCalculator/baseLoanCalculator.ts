@@ -1,7 +1,7 @@
-import { BasicLoanInputs } from '../interfaces/inputs';
-import { EMIScheduleItem, LoanCalculationOutput, LoanSummary } from '../interfaces/outputs';
-import { addMonths, getMonth, getYear } from '../utils/dateUtils';
-import { calculateEMI, calculateMonthlyInterest, roundToDecimal } from '../utils/financialUtils';
+import { BasicLoanInputs } from '../../interfaces/LoanCalculator/inputs';
+import { EMIScheduleItem, LoanCalculationOutput, LoanSummary } from '../../interfaces/LoanCalculator/outputs';
+import { addMonths, getMonth, getYear } from '../../utils/dateUtils';
+import { calculateEMI, calculateMonthlyInterest, roundToDecimal } from '../../utils/financialUtils';
 
 /**
  * Base loan calculator class that handles standard loan calculations
