@@ -1,6 +1,8 @@
 // Export interfaces
 export * from './interfaces/LoanCalculator/inputs';
 export * from './interfaces/LoanCalculator/outputs';
+export * from './interfaces/SipCalculator/inputs';
+export * from './interfaces/SipCalculator/outputs';
 
 // Export utility functions
 export * from './utils/dateUtils';
@@ -9,6 +11,7 @@ export * from './utils/financialUtils';
 // Export core calculator classes
 export * from './core/LoanCalculator/baseLoanCalculator';
 export * from './core/LoanCalculator/advancedLoanCalculator';
+export * from './core/SipCalculator/sipCalculator';
 
 /**
  * LoanWise - A TypeScript library for detailed loan calculations

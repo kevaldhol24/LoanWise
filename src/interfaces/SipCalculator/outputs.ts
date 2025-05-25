@@ -1,22 +1,4 @@
-/**
- * Monthly breakdown of SIP investment
- */
-export interface SIPMonthlyDetail {
-  /** Month number (1-based) */
-  month: number;
-  
-  /** Amount invested in this month */
-  investmentAmount: number;
-  
-  /** Interest earned this month (without inflation) */
-  interestEarned: number;
 
-  /** Inflation-adjusted interest earned this month (if inflation rate was provided) */
-  inflationAdjustedInterestEarned: number;
-
-  /** Investment value at the end of this month */
-  endingBalance: number;
-}
 
 /**
  * Yearly summary of SIP investment
@@ -34,8 +16,11 @@ export interface SIPYearlyBreakdown {
   /** Inflation-adjusted interest earned during this year (if inflation rate was provided) */
   inflationAdjustedYearlyInterest: number;
 
-  /** Total value at the end of this year */
-  yearEndValue: number;
+  /** Year-end value of the investment (without inflation adjustment) */
+  yearEndMaturity: number;
+
+  /** Inflation-adjusted year-end value of the investment (if inflation rate was provided) */
+  inflationAdjustedYearEndMaturity: number;
 }
 
 /**
@@ -56,9 +41,6 @@ export interface SIPCalculationResult {
   
   /** Inflation-adjusted wealth gain (if inflation rate was provided) */
   inflationAdjustedWealthGain?: number;
-  
-  /** Monthly breakdown of the investment */
-  monthlyDetails: SIPMonthlyDetail[];
   
   /** Yearly summary of the investment */
   yearlyBreakdown: SIPYearlyBreakdown[];
