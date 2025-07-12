@@ -50,6 +50,8 @@ export class CompoundInterestCalculator {
                 period: i + 1,
                 amount: roundToDecimal(amount, 2),
                 year: Math.floor(i / (12 / n)) + 1,
+                interest: roundToDecimal(interest, 2),
+                contribution: this.additionalContribution ? roundToDecimal(this.additionalContribution, 2) : 0
             });
         }
 

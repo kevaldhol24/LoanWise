@@ -8,5 +8,4 @@ export interface GoalBasedSIPInputs {
   years: number;
   /** Expected annual rate of return (percentage) */
   annualRate: number;
-  /** Compounding frequency per year (e.g., 12 for monthly, 4 for quarterly, 1 for yearly) */
 }

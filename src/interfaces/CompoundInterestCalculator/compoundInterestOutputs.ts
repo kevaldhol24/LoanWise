@@ -22,4 +22,8 @@ export interface CompoundInterestScheduleItem {
   period: number;
   /** Amount at this period */
   amount: number;
+
+  interest: number
+
+  contribution?: number;
 }
