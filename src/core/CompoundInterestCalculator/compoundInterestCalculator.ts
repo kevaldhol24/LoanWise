@@ -1,6 +1,6 @@
-import { CompoundInterestInputs } from '../../../interfaces/LoanCalculator/compoundInterestInputs';
-import { CompoundInterestOutput, CompoundInterestScheduleItem } from '../../../interfaces/LoanCalculator/compoundInterestOutputs';
-import { roundToDecimal } from '../../../utils/financialUtils';
+import { CompoundInterestInputs, CompoundInterestOutput, CompoundInterestScheduleItem } from "../../interfaces/CompoundInterestCalculator";
+import { roundToDecimal } from "../../utils/financialUtils";
+
 
 /**
  * Compound Interest Calculator supporting advanced inputs and accurate results

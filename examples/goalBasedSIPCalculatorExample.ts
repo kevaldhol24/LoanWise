@@ -1,5 +1,6 @@
-import { GoalBasedSIPCalculator } from '../src/core/LoanCalculator/GoalBasedSIPCalculator/goalBasedSIPCalculator';
-import { GoalBasedSIPInputs } from '../src/interfaces/LoanCalculator/goalBasedSIPInputs';
+import { GoalBasedSIPCalculator } from "../src/core/GoalBasedSIPCalculator/goalBasedSIPCalculator";
+import { GoalBasedSIPInputs } from "../src/interfaces/GoalBasedSipCalculator";
+
 
 const inputs: GoalBasedSIPInputs = {
   goalAmount: 2000000,

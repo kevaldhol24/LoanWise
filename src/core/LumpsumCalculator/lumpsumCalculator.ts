@@ -1,6 +1,6 @@
-import { LumpsumInputs } from '../../../interfaces/LoanCalculator/lumpsumInputs';
-import { LumpsumOutput } from '../../../interfaces/LoanCalculator/lumpsumOutputs';
-import { roundToDecimal } from '../../../utils/financialUtils';
+import { LumpsumInputs, LumpsumOutput } from "../../interfaces/LumpsumSipCalculator";
+import { roundToDecimal } from "../../utils/financialUtils";
+
 
 /**
  * Lumpsum Investment Calculator

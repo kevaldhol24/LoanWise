@@ -1,5 +1,5 @@
-import { LumpsumCalculator } from '../src/core/LoanCalculator/LumpsumCalculator/lumpsumCalculator';
-import { LumpsumInputs } from '../src/interfaces/LoanCalculator/lumpsumInputs';
+import { LumpsumCalculator } from '../src/core/LumpsumCalculator/lumpsumCalculator';
+import { LumpsumInputs } from '../src/interfaces/LumpsumSipCalculator/lumpsumInputs';
 
 const inputs: LumpsumInputs = {
   principal: 15000,

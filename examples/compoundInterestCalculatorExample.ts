@@ -1,12 +1,12 @@
-import { CompoundInterestCalculator } from '../src/core/LoanCalculator/CompoundInterestCalculator/compoundInterestCalculator';
-import { CompoundInterestInputs } from '../src/interfaces/LoanCalculator/compoundInterestInputs';
+import { CompoundInterestCalculator } from '../src/core/CompoundInterestCalculator/compoundInterestCalculator';
+import { CompoundInterestInputs } from '../src/interfaces/CompoundInterestCalculator/compoundInterestInputs';
 
 const inputs: CompoundInterestInputs = {
-  principal: 20000,
-  annualRate: 6,
-  compoundingFrequency: 6, // Quarterly
+  principal: 100000,
+  annualRate: 12,
+  compoundingFrequency: 1, // Quarterly
   years: 1,
-//   additionalContribution: 100 // Optional, per period
+//   additionalContribution: -1000 // Optional, per period
 };
 
 const calculator = new CompoundInterestCalculator(inputs);

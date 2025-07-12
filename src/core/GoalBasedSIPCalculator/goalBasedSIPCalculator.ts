@@ -1,8 +1,6 @@
-import { GoalBasedSIPInputs } from '../../../interfaces/LoanCalculator/goalBasedSIPInputs';
-import { GoalBasedSIPOutput } from '../../../interfaces/LoanCalculator/goalBasedSIPOutputs';
-import { GoalBasedSIPScheduleItem } from '../../../interfaces/LoanCalculator/goalBasedSIPScheduleItem';
-import { roundToDecimal } from '../../../utils/financialUtils';
-import { SIPCalculator } from '../../SipCalculator';
+import { GoalBasedSIPInputs, GoalBasedSIPOutput } from "../../interfaces/GoalBasedSipCalculator";
+import { roundToDecimal } from "../../utils/financialUtils";
+import { SIPCalculator } from "../SipCalculator";
 
 /**
  * Goal-based SIP Calculator
